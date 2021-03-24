@@ -35,9 +35,9 @@ from wstore.asset_manager.resource_plugins.plugin import Plugin
 from wstore.asset_manager.resource_plugins.plugin_error import PluginError
 
 
-CLIENT_ID = os.getenv('MARKET_EORI', 'EU.EORI.NLMARKETPLA')
-KEY = os.getenv('MARKET_KEY', './certs/mplace.key')
-CERT = os.getenv('MARKET_CRT', './certs/mplace.crt')
+CLIENT_ID = os.getenv('BAE_EORI', 'EU.EORI.NLMARKETPLA')
+KEY = os.getenv('BAE_TOKEN_KEY', './certs/mplace.key')
+CERT = os.getenv('BAE_TOKEN_CRT', './certs/mplace.crt')
 
 UNITS = [{
     'name': 'Api call',
