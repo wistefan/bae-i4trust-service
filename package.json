@@ -1,0 +1,50 @@
+{
+    "name": "i4Trust Service",
+    "author": "fdelavega",
+    "version": "0.1",
+    "module": "i4trust_service.I4TrustService",
+    "media_types": ["FIWARE NGSI-LD"],
+    "formats": ["URL"],
+    "overrides": [],
+    "pull_accounting": true,
+    "form": {
+        "ar_endpoint": {
+            "type": "text",
+            "label": "AR Endpoint",
+            "placeholder": "https://pdc-as.i4trust.fiware.io",
+            "mandatory": true
+        },
+        "ar_id": {
+            "type": "text",
+            "label": "AR ID",
+            "placeholder": "EU.EORI.NL000000000",
+            "mandatory": true
+        },
+        "resource_type": {
+            "type": "text",
+            "label": "Resource Type",
+            "placeholder": "DELIVERYORDER",
+            "mandatory": true
+        },
+        "patch_allowed": {
+            "type": "checkbox",
+            "label": "PATCH",
+            "default": true
+        },
+        "patch_attributes": {
+            "type": "text",
+            "label": "PATCH Attributes",
+            "placeholder": "PTA,PDA"
+        },
+        "get_allowed": {
+            "type": "checkbox",
+            "label": "GET",
+            "default": true
+        },
+        "get_attributes": {
+            "type": "text",
+            "label": "GET Attributes",
+            "placeholder": "*"
+        }
+    }
+}
