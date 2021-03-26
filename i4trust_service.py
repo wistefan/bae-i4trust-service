@@ -94,6 +94,11 @@ class I4TrustService(Plugin):
         if 'patch_allowed' not in asset.meta_info:
             asset.meta_info['patch_allowed'] = False
 
+        try:
+            asset.meta_info['minutes'] = int(asset.meta_info['minutes'])
+        except:
+            asset.meta_info['minutes'] = 10080  # One week
+
         asset.save()
 
     def on_post_product_spec_attachment(self, asset, asset_t, product_spec):
@@ -248,6 +253,7 @@ class I4TrustService(Plugin):
         auth_data = response.json()
 
         not_before = int(str(time.time()).split('.')[0])
+        not_after = not_before + (asset.meta_info['minutes'] * 60)
 
         # Load policies
         policies = []
@@ -261,7 +267,7 @@ class I4TrustService(Plugin):
         policy = {
             "delegationEvidence": {
                 "notBefore": not_before,
-                #"notOnOrAfter": 1614354348,
+                "notOnOrAfter": not_after,
                 "policyIssuer": asset.meta_info['idp_id'],
                 "target": {
                     "accessSubject": order.owner_organization.idp

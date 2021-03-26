@@ -8,6 +8,12 @@
     "overrides": [],
     "pull_accounting": true,
     "form": {
+        "minutes": {
+            "type": "text",
+            "label": "Duration in Minutes",
+            "placeholder": "100000",
+            "mandatory": true
+        },
         "ar_endpoint": {
             "type": "text",
             "label": "AR Endpoint",
