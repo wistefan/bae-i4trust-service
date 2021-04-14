@@ -94,6 +94,12 @@ class I4TrustService(Plugin):
         if 'patch_allowed' not in asset.meta_info:
             asset.meta_info['patch_allowed'] = False
 
+        if 'post_allowed' not in asset.meta_info:
+            asset.meta_info['post_allowed'] = False
+
+        if 'delete_allowed' not in asset.meta_info:
+            asset.meta_info['delete_allowed'] = False
+
         try:
             asset.meta_info['minutes'] = int(asset.meta_info['minutes'])
         except:
@@ -175,6 +181,41 @@ class I4TrustService(Plugin):
                         "valueTo": ""
                     }]
                 })
+
+            # Add supported post
+            if asset.meta_info['post_allowed']:
+                charact.append({
+                    "name": "POST Permission",
+                    "description": "Attributes that can be posted",
+                    "valueType": "string",
+                    "configurable": False,
+                    "productSpecCharacteristicValue": [{
+                        "valueType": "string",
+                        "default": True,
+                        "value": asset.meta_info['post_attributes'],
+                        "unitOfMeasure": "",
+                        "valueFrom": "",
+                        "valueTo": ""
+                    }]
+                })
+
+            # Add supported delete
+            if asset.meta_info['delete_allowed']:
+                charact.append({
+                    "name": "DELETE Permission",
+                    "description": "Attributes that can be deleted",
+                    "valueType": "string",
+                    "configurable": False,
+                    "productSpecCharacteristicValue": [{
+                        "valueType": "string",
+                        "default": True,
+                        "value": asset.meta_info['delete_attributes'],
+                        "unitOfMeasure": "",
+                        "valueFrom": "",
+                        "valueTo": ""
+                    }]
+                })
+            
             resp = requests.patch(prod_url, json={
                 'productSpecCharacteristic': charact
             }, verify=False)
@@ -262,6 +303,12 @@ class I4TrustService(Plugin):
 
         if asset.meta_info['get_allowed']:
             policies.append(self._create_policy("GET", asset.meta_info['resource_type'], asset.meta_info['get_attributes']))
+
+        if asset.meta_info['post_allowed']:
+            policies.append(self._create_policy("POST", asset.meta_info['resource_type'], asset.meta_info['post_attributes']))
+
+        if asset.meta_info['delete_allowed']:
+            policies.append(self._create_policy("DELETE", asset.meta_info['resource_type'], asset.meta_info['delete_attributes']))
 
         # Create new policy
         policy = {

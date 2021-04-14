@@ -1,5 +1,5 @@
 {
-    "name": "i4Trust Service",
+    "name": "NGSI-LD Data Service",
     "author": "fdelavega",
     "version": "0.1",
     "module": "i4trust_service.I4TrustService",
@@ -35,12 +35,12 @@
         "patch_allowed": {
             "type": "checkbox",
             "label": "PATCH",
-            "default": true
+            "default": false
         },
         "patch_attributes": {
             "type": "text",
             "label": "PATCH Attributes",
-            "placeholder": "PTA,PDA"
+            "placeholder": "pta,pda"
         },
         "get_allowed": {
             "type": "checkbox",
@@ -50,6 +50,26 @@
         "get_attributes": {
             "type": "text",
             "label": "GET Attributes",
+            "placeholder": "*"
+        },
+	"post_allowed": {
+            "type": "checkbox",
+            "label": "POST",
+            "default": false
+        },
+        "post_attributes": {
+            "type": "text",
+            "label": "POST Attributes",
+            "placeholder": "*"
+        },
+	"delete_allowed": {
+            "type": "checkbox",
+            "label": "DELETE",
+            "default": false
+        },
+        "delete_attributes": {
+            "type": "text",
+            "label": "DELETE Attributes",
             "placeholder": "*"
         }
     }
