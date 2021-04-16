@@ -117,22 +117,7 @@ class I4TrustService(Plugin):
         try:
             charact = product_spec['productSpecCharacteristic']
 
-            # Add endpoint
-            charact.append({
-                "name": "AR Endpoint",
-                "description": "Autorization Registry Endpoint",
-                "valueType": "string",
-                "configurable": False,
-                "productSpecCharacteristicValue": [{
-                    "valueType": "string",
-                    "default": True,
-                    "value": asset.meta_info['ar_endpoint'],
-                    "unitOfMeasure": "",
-                    "valueFrom": "",
-                    "valueTo": ""
-                }]
-            })
-
+            # Add entity type
             charact.append({
                 "name": "Entity type",
                 "description": "Entity type that would be accessed",
