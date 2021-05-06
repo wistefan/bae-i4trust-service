@@ -7,6 +7,7 @@
     "formats": ["URL"],
     "overrides": [],
     "pull_accounting": true,
+    "form_order": ["ar_id", "ar_endpoint", "minutes", "resource_type", "get_allowed", "get_attributes", "patch_allowed", "patch_attributes", "post_allowed", "post_attributes", "delete_allowed", "delete_attributes"],
     "form": {
         "minutes": {
             "type": "text",
@@ -52,7 +53,7 @@
             "label": "GET Attributes",
             "placeholder": "*"
         },
-	"post_allowed": {
+	    "post_allowed": {
             "type": "checkbox",
             "label": "POST",
             "default": false
@@ -62,7 +63,7 @@
             "label": "POST Attributes",
             "placeholder": "*"
         },
-	"delete_allowed": {
+	    "delete_allowed": {
             "type": "checkbox",
             "label": "DELETE",
             "default": false
