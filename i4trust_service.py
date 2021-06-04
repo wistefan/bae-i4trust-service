@@ -230,6 +230,97 @@ class I4TrustService(Plugin):
         }
         return policy
 
+    def on_product_suspension(self, asset, contract, order):
+
+        token_endpoint = urljoin(asset.meta_info['ar_endpoint'], '/token')
+        policy_endpoint = urljoin(asset.meta_info['ar_endpoint'], '/createpolicy')
+
+        # Generate local JWT
+        token = self.build_token({
+            'client_id': CLIENT_ID,
+            'idp_id': asset.meta_info['idp_id'],
+            'ar_id': asset.meta_info['ar_id'],
+            'key': KEY,
+            'cert': CERT,
+            'token_endpoint': token_endpoint
+        })
+
+        auth_params = {
+            'grant_type': 'client_credentials',
+            'scope': 'iSHARE',
+            'client_id': CLIENT_ID,
+            'client_assertion_type': 'urn:ietf:params:oauth:client-assertion-type:jwt-bearer',
+            'client_assertion': token
+        }
+
+        response = requests.post(token_endpoint, data=auth_params)
+
+        try:
+            response.raise_for_status()
+        except HTTPError as e:
+            print(e.request.body)
+            print(e)
+            print(e.response.text)
+            print(response.json())
+
+            raise PluginError('Error validating JWT')
+
+        auth_data = response.json()
+
+        # Policy expires now
+        not_before = int(str(time.time()).split('.')[0])
+        not_after = not_before
+
+        # Set policies
+        policies = []
+        if asset.meta_info['patch_allowed']:
+            policies.append(self._create_policy("PATCH", asset.meta_info['resource_type'], asset.meta_info['patch_attributes']))
+
+        if asset.meta_info['get_allowed']:
+            policies.append(self._create_policy("GET", asset.meta_info['resource_type'], asset.meta_info['get_attributes']))
+
+        if asset.meta_info['post_allowed']:
+            policies.append(self._create_policy("POST", asset.meta_info['resource_type'], asset.meta_info['post_attributes']))
+
+        if asset.meta_info['delete_allowed']:
+            policies.append(self._create_policy("DELETE", asset.meta_info['resource_type'], asset.meta_info['delete_attributes']))
+        
+        # Create delegation evidence to be updated
+        policy = {
+            "delegationEvidence": {
+                "notBefore": not_before,
+                "notOnOrAfter": not_after,
+                "policyIssuer": asset.meta_info['idp_id'],
+                "target": {
+                    "accessSubject": order.owner_organization.idp
+                },
+                "policySets": [{
+                    "target": {
+					    "environment": {
+						    "licenses": [
+							    "ISHARE.0001"
+						    ]
+					    }
+				    },
+                    "policies": policies
+                }]
+            }
+        }
+
+        policy_response = requests.post(policy_endpoint, json=policy, headers={
+             'Authorization': 'Bearer ' + auth_data['access_token']
+        })
+
+        try:
+            policy_response.raise_for_status()
+        except HTTPError as e:
+            print('HTTP  ERROR')
+            print(e.request.body)
+            print(e)
+            print(e.response.text)
+
+            raise PluginError('Error creating policy')
+    
     def on_product_acquisition(self, asset, contract, order):
 
         token_endpoint = urljoin(asset.meta_info['ar_endpoint'], '/token')
