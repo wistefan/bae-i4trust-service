@@ -426,7 +426,7 @@ class I4TrustService(Plugin):
         return UNITS
 
     def get_pending_accounting(self, asset, contract, order):
-        return []
+        return [], None
 
 
 if __name__ == "__main__":
