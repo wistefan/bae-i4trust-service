@@ -24,7 +24,7 @@ import re
 import jwt
 import requests
 from requests.exceptions import HTTPError
-from urlparse import urljoin
+from urllib.parse import urljoin
 import uuid
 
 import time
