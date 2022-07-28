@@ -1,0 +1,73 @@
+name: Pre-Release
+
+on:
+  pull_request:
+    types:
+      - opened
+      - synchronize
+      - reopened
+      - labeled
+      - unlabeled
+
+env:
+  PLUGIN_NAME: bae-i4trust-service
+
+jobs:
+
+  generate-version:
+    name: Generate version
+    runs-on: ubuntu-latest
+
+    outputs:
+      version: ${{ steps.out.outputs.version }}
+      plain-version: ${{ steps.out.outputs.plain-version }}
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - id: bump
+        uses: zwaldowski/match-label-action@v1
+        with:
+          allowed: major,minor,patch
+
+      - uses: zwaldowski/semver-release-action@v2
+        with:
+          dry_run: true
+          bump: ${{ steps.bump.outputs.match }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Get PR Number
+        id: pr_number
+        run: echo "::set-output name=nr::$(echo $GITHUB_REF | awk 'BEGIN { FS = "/" } ; { print $3 }')"
+
+      - name: Set version output
+        id: out
+        run: |
+          echo "::set-output name=version::$(echo ${VERSION}-PRE-${{ steps.pr_number.outputs.nr }})"
+          echo "::set-output name=plain-version::$(echo ${VERSION})"
+
+
+  release:
+    name: Release
+    needs: ["generate-version"]
+    runs-on: ubuntu-latest
+
+    steps:
+
+      - uses: actions/checkout@v2
+
+      - name: Zip plugin
+        run: |
+          zip ${{ env.PLUGIN_NAME }}_${{ needs.generate-version.outputs.version }}.zip package.json i4trust_service.py
+
+      - uses: "marvinpinto/action-automatic-releases@latest"
+        with:
+          repo_token: "${{ secrets.GITHUB_TOKEN }}"
+          automatic_release_tag: ${{ needs.generate-version.outputs.version }}
+          prerelease: true
+          title: ${{ needs.generate-version.outputs.version }}
+          files: |
+            ${{ env.PLUGIN_NAME }}_${{ needs.generate-version.outputs.version }}.zip
+
+  
+      
