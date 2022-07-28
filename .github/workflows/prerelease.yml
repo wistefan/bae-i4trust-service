@@ -48,7 +48,7 @@ jobs:
 
 
   release:
-    name: Release
+    name: Zip and Release
     needs: ["generate-version"]
     runs-on: ubuntu-latest
 
