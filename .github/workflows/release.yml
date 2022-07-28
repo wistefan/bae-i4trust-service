@@ -10,7 +10,9 @@ env:
   PLUGIN_NAME: bae-i4trust-service
 
 
-generate-version:
+jobs:
+  
+  generate-version:
     name: Generate version
     runs-on: ubuntu-latest
 
@@ -36,7 +38,7 @@ generate-version:
         run: echo "::set-output name=version::$(echo ${VERSION})"
 
 
-release:
+  release:
     name: Git release
     needs: ["generate-version"]
     runs-on: ubuntu-latest
