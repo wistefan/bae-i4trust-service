@@ -20,8 +20,7 @@
 	"patch_subscription_allowed", "patch_subscription_ids", "patch_subscription_attributes",
 	"post_subscription_allowed", "post_subscription_ids", "post_subscription_attributes",
 	"delete_subscription_allowed", "delete_subscription_ids", "delete_subscription_attributes",
-	"notification_resource_type",
-	"notification_allowed", "notification_ids", "notification_attributes",
+	"notification_allowed", "notification_resource_type", "notification_ids", "notification_attributes",
 	"sidecar_endpoint_config_allowed"
     ],
     "form": {
@@ -73,7 +72,7 @@
         "get_allowed": {
             "type": "checkbox",
             "label": "GET Entity",
-            "default": true
+            "default": false
         },
 	"get_ids": {
             "type": "text",
@@ -139,7 +138,7 @@
         "get_subscription_allowed": {
             "type": "checkbox",
             "label": "GET Subscription",
-            "default": true
+            "default": false
         },
 	"get_subscription_ids": {
             "type": "text",

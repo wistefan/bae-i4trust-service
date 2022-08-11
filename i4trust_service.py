@@ -356,7 +356,6 @@ class I4TrustService(Plugin):
     def _get_access_token(self, asset):
         
         token_endpoint = asset.meta_info['ar_token_endpoint']
-        policy_endpoint = asset.meta_info['ar_policy_endpoint']
 
         # Generate local JWT
         token = self.build_token({
@@ -477,6 +476,8 @@ class I4TrustService(Plugin):
 
     def on_product_suspension(self, asset, contract, order):
 
+        policy_endpoint = asset.meta_info['ar_policy_endpoint']
+
         # Policy expires now
         not_before = int(str(time.time()).split('.')[0])
         not_after = not_before
@@ -503,6 +504,8 @@ class I4TrustService(Plugin):
             raise PluginError('Error creating policy')
     
     def on_product_acquisition(self, asset, contract, order):
+
+        policy_endpoint = asset.meta_info['ar_policy_endpoint']
 
         not_before = int(str(time.time()).split('.')[0])
         not_after = not_before + (asset.meta_info['minutes'] * 60)
