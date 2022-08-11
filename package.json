@@ -1,19 +1,35 @@
 {
     "name": "NGSI-LD Data Service",
     "author": "fdelavega",
-    "version": "2.0.0",
+    "version": "3.0.0",
     "module": "i4trust_service.I4TrustService",
     "media_types": ["FIWARE NGSI-LD"],
     "formats": ["URL"],
     "overrides": [],
     "pull_accounting": true,
-    "form_order": ["ar_id", "ar_token_endpoint", "ar_policy_endpoint", "minutes", "resource_type", "get_allowed", "get_attributes", "patch_allowed", "patch_attributes", "post_allowed", "post_attributes", "delete_allowed", "delete_attributes"],
+    "form_order": [
+	"ar_id", "ar_token_endpoint", "ar_policy_endpoint",
+	"minutes",
+	"resource_type",
+	"get_allowed", "get_ids", "get_attributes",
+	"patch_allowed", "patch_ids", "patch_attributes",
+	"post_allowed", "post_ids", "post_attributes",
+	"delete_allowed", "delete_ids", "delete_attributes",
+	"subscription_resource_type",
+	"get_subscription_allowed", "get_subscription_ids", "get_subscription_attributes",
+	"patch_subscription_allowed", "patch_subscription_ids", "patch_subscription_attributes",
+	"post_subscription_allowed", "post_subscription_ids", "post_subscription_attributes",
+	"delete_subscription_allowed", "delete_subscription_ids", "delete_subscription_attributes",
+	"notification_resource_type",
+	"notification_allowed", "notification_ids", "notification_attributes",
+	"sidecar_endpoint_config_allowed"
+    ],
     "form": {
         "minutes": {
             "type": "text",
             "label": "Duration in Minutes",
             "placeholder": "100000",
-            "mandatory": true
+            "mandatory": false
         },
         "ar_token_endpoint": {
             "type": "text",
@@ -37,47 +53,159 @@
             "type": "text",
             "label": "Resource Type",
             "placeholder": "DELIVERYORDER",
-            "mandatory": true
+            "mandatory": false
         },
         "patch_allowed": {
             "type": "checkbox",
-            "label": "PATCH",
+            "label": "PATCH Entity",
             "default": false
+        },
+	"patch_ids": {
+            "type": "text",
+            "label": "PATCH Entity Identifiers",
+            "placeholder": "id1,id2"
         },
         "patch_attributes": {
             "type": "text",
-            "label": "PATCH Attributes",
+            "label": "PATCH Entity Attributes",
             "placeholder": "pta,pda"
         },
         "get_allowed": {
             "type": "checkbox",
-            "label": "GET",
+            "label": "GET Entity",
             "default": true
+        },
+	"get_ids": {
+            "type": "text",
+            "label": "GET Entity Identifiers",
+            "placeholder": "*"
         },
         "get_attributes": {
             "type": "text",
-            "label": "GET Attributes",
+            "label": "GET Entity Attributes",
             "placeholder": "*"
         },
-	    "post_allowed": {
+	"post_allowed": {
             "type": "checkbox",
-            "label": "POST",
+            "label": "POST Entity",
             "default": false
+        },
+	"post_ids": {
+            "type": "text",
+            "label": "POST Entity Identifiers",
+            "placeholder": "*"
         },
         "post_attributes": {
             "type": "text",
-            "label": "POST Attributes",
+            "label": "POST Entity Attributes",
             "placeholder": "*"
         },
-	    "delete_allowed": {
+	"delete_allowed": {
             "type": "checkbox",
-            "label": "DELETE",
+            "label": "DELETE Entity",
             "default": false
+        },
+	"delete_ids": {
+            "type": "text",
+            "label": "DELETE Entity Identifiers",
+            "placeholder": "*"
         },
         "delete_attributes": {
             "type": "text",
-            "label": "DELETE Attributes",
+            "label": "DELETE Entity Attributes",
             "placeholder": "*"
+        },
+	"subscription_resource_type": {
+            "type": "text",
+            "label": "Subscription Type (watched entity type)",
+            "placeholder": "DELIVERYORDER",
+            "mandatory": false
+        },
+	"patch_subscription_allowed": {
+            "type": "checkbox",
+            "label": "PATCH Subscription",
+            "default": false
+        },
+	"patch_subscription_ids": {
+            "type": "text",
+            "label": "PATCH Subscription Identifiers (Subscription IDs)",
+            "placeholder": "id1,id2"
+        },
+        "patch_subscription_attributes": {
+            "type": "text",
+            "label": "PATCH Subscription Attributes (Notification attributes)",
+            "placeholder": "pta,pda"
+        },
+        "get_subscription_allowed": {
+            "type": "checkbox",
+            "label": "GET Subscription",
+            "default": true
+        },
+	"get_subscription_ids": {
+            "type": "text",
+            "label": "GET Subscription Identifiers (Subscription IDs)",
+            "placeholder": "*"
+        },
+        "get_subscription_attributes": {
+            "type": "text",
+            "label": "GET Subscription Attributes (Notification attributes)",
+            "placeholder": "*"
+        },
+	"post_subscription_allowed": {
+            "type": "checkbox",
+            "label": "POST Subscription",
+            "default": false
+        },
+	"post_subscription_ids": {
+            "type": "text",
+            "label": "POST Subscription Identifiers (Subscription IDs)",
+            "placeholder": "*"
+        },
+        "post_subscription_attributes": {
+            "type": "text",
+            "label": "POST Subscription Attributes (Notification attributes)",
+            "placeholder": "*"
+        },
+	"delete_subscription_allowed": {
+            "type": "checkbox",
+            "label": "DELETE Subscription",
+            "default": false
+        },
+	"delete_subscription_ids": {
+            "type": "text",
+            "label": "DELETE Subscription Identifiers (Subscription IDs)",
+            "placeholder": "*"
+        },
+        "delete_subscription_attributes": {
+            "type": "text",
+            "label": "DELETE Subscription Attributes (Notification attributes)",
+            "placeholder": "*"
+        },
+	"notification_resource_type": {
+            "type": "text",
+            "label": "Notification Type (entity type in notification)",
+            "placeholder": "DELIVERYORDER",
+            "mandatory": false
+        },
+	"notification_allowed": {
+            "type": "checkbox",
+            "label": "Notifications",
+            "default": false
+        },
+	"notification_ids": {
+            "type": "text",
+            "label": "Notification Identifiers (corresponding Subscription IDs)",
+            "placeholder": "id1,id2"
+        },
+        "notification_attributes": {
+            "type": "text",
+            "label": "Notification Attributes (entity attributes in Notification)",
+            "placeholder": "pta,pda"
+        },
+	"sidecar_endpoint_config_allowed": {
+            "type": "checkbox",
+            "label": "Sidecar-Proxy endpoint configuration service",
+            "default": false
         }
     }
 }
