@@ -1,13 +1,13 @@
 {
     "name": "NGSI-LD Data Service",
     "author": "fdelavega",
-    "version": "0.1",
+    "version": "2.0.0",
     "module": "i4trust_service.I4TrustService",
     "media_types": ["FIWARE NGSI-LD"],
     "formats": ["URL"],
     "overrides": [],
     "pull_accounting": true,
-    "form_order": ["ar_id", "ar_endpoint", "minutes", "resource_type", "get_allowed", "get_attributes", "patch_allowed", "patch_attributes", "post_allowed", "post_attributes", "delete_allowed", "delete_attributes"],
+    "form_order": ["ar_id", "ar_token_endpoint", "ar_policy_endpoint", "minutes", "resource_type", "get_allowed", "get_attributes", "patch_allowed", "patch_attributes", "post_allowed", "post_attributes", "delete_allowed", "delete_attributes"],
     "form": {
         "minutes": {
             "type": "text",
@@ -15,10 +15,16 @@
             "placeholder": "100000",
             "mandatory": true
         },
-        "ar_endpoint": {
+        "ar_token_endpoint": {
             "type": "text",
-            "label": "AR Endpoint",
-            "placeholder": "https://pdc-as.i4trust.fiware.io",
+            "label": "AR /token Endpoint",
+            "placeholder": "https://pdc-as.i4trust.fiware.io/token",
+            "mandatory": true
+        },
+	"ar_policy_endpoint": {
+            "type": "text",
+            "label": "AR /createpolicy Endpoint",
+            "placeholder": "https://pdc-as.i4trust.fiware.io/createpolicy",
             "mandatory": true
         },
         "ar_id": {

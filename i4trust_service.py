@@ -24,7 +24,6 @@ import re
 import jwt
 import requests
 from requests.exceptions import HTTPError
-from urlparse import urljoin
 import uuid
 
 import time
@@ -232,8 +231,8 @@ class I4TrustService(Plugin):
 
     def on_product_suspension(self, asset, contract, order):
 
-        token_endpoint = urljoin(asset.meta_info['ar_endpoint'], '/token')
-        policy_endpoint = urljoin(asset.meta_info['ar_endpoint'], '/createpolicy')
+        token_endpoint = asset.meta_info['ar_token_endpoint']
+        policy_endpoint = asset.meta_info['ar_policy_endpoint']
 
         # Generate local JWT
         token = self.build_token({
@@ -323,8 +322,8 @@ class I4TrustService(Plugin):
     
     def on_product_acquisition(self, asset, contract, order):
 
-        token_endpoint = urljoin(asset.meta_info['ar_endpoint'], '/token')
-        policy_endpoint = urljoin(asset.meta_info['ar_endpoint'], '/createpolicy')
+        token_endpoint = asset.meta_info['ar_token_endpoint']
+        policy_endpoint = asset.meta_info['ar_policy_endpoint']
 
         # Generate local JWT
         token = self.build_token({
