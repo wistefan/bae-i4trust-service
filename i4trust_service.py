@@ -22,6 +22,7 @@ from __future__ import unicode_literals
 import os
 import re
 import jwt
+import json
 import requests
 from requests.exceptions import HTTPError
 import uuid
@@ -86,6 +87,15 @@ class I4TrustService(Plugin):
     def on_post_product_spec_validation(self, provider, asset):
         # Save IDP id with the offering meta data
         asset.meta_info['idp_id'] = provider.idp
+
+        # Check vc type 
+        if 'vc_type' not in asset.meta_info:
+            raise PluginError('Verifiable Credential type must be specified.')
+
+        # Check role name 
+        if 'role_name' not in asset.meta_info:
+            raise PluginError('Name of the role must be specified.')
+
 
         # Entity CRUD operations
         if 'get_allowed' not in asset.meta_info:
@@ -186,8 +196,36 @@ class I4TrustService(Plugin):
         except:
             asset.meta_info['minutes'] = 10080  # One week
 
-        # Save asset data
-        asset.save()
+
+        policy_endpoint = asset.meta_info['ar_policy_endpoint']
+
+        not_before = int(str(time.time()).split('.')[0])
+        not_after = not_before + (3 * 31536000)
+
+        # create the role
+        role_evidence = self._create_role(asset, not_before, not_after)
+
+         
+        # Get access token
+        access_token = self._get_access_token(asset)
+
+        # Create policies
+        policy_response_role = requests.post(policy_endpoint, json=role_evidence, headers={
+             'Authorization': 'Bearer ' + access_token
+        })
+
+        try:
+            policy_response_role.raise_for_status()
+            # Save asset data
+            asset.save()
+        except HTTPError as e:
+            print('HTTP  ERROR')
+            print(e.request.body)
+            print(e)
+            print(e.response.text)
+
+            raise PluginError('Error creating policy')
+
 
     def _append_string_charact(self, charact, name, description, value):
         charact.append({
@@ -214,6 +252,20 @@ class I4TrustService(Plugin):
         # Get the product
         try:
             charact = product_spec['productSpecCharacteristic']
+
+            # Add vc type
+            if asset.meta_info['vc_type']: 
+                self._append_string_charact(charact, 
+                "Verifiable Credential type",
+                "Type of verifiable credentials that can be issued.",
+                asset.meta_info['vc_type'])
+
+            # Add role name
+            if asset.meta_info['role_name']: 
+                self._append_string_charact(charact, 
+                "Role name",
+                "Name of the role to be created.",
+                asset.meta_info['role_name'])
 
             # Add entity type
             if     (asset.meta_info['get_allowed'] or asset.meta_info['patch_allowed'] or
@@ -411,7 +463,35 @@ class I4TrustService(Plugin):
         }
         return policy
 
-    def _create_delegation_evidence(self, asset, order, not_before, not_after):
+    def _create_vc(self, asset, order, not_before, not_after):
+
+        # Set policies
+        policies = []
+        policies.append(self._create_policy("ISSUE", asset.meta_info['vc_type'], "*", asset.meta_info['role_name']))
+         # Create delegation evidence to be updated
+        delegation_evidence = {
+            "delegationEvidence": {
+                "notBefore": not_before,
+                "notOnOrAfter": not_after,
+                "policyIssuer": asset.meta_info['idp_id'],
+                "target": {
+                    "accessSubject": (order.owner_organization.issuerDid)
+                },
+                "policySets": [{
+                    "target": {
+			"environment": {
+			    "licenses": [
+				"ISHARE.0001"
+			    ]
+			}
+		    },
+                    "policies": policies
+                }]
+            }
+        }
+        return delegation_evidence
+
+    def _create_role(self, asset, not_before, not_after):
 
         # Set policies
         policies = []
@@ -457,7 +537,7 @@ class I4TrustService(Plugin):
                 "notOnOrAfter": not_after,
                 "policyIssuer": asset.meta_info['idp_id'],
                 "target": {
-                    "accessSubject": order.owner_organization.idp
+                    "accessSubject": asset.meta_info['role_name'],
                 },
                 "policySets": [{
                     "target": {
@@ -483,18 +563,19 @@ class I4TrustService(Plugin):
         not_after = not_before
 
         # Create delegation evidence to be updated
-        delegation_evidence = self._create_delegation_evidence(asset, order, not_before, not_after)
-        
+        vc_evidence = self._create_vc(asset, order, not_before, not_after)
+
         # Get access token
         access_token = self._get_access_token(asset)
 
-        # Update policies
-        policy_response = requests.post(policy_endpoint, json=delegation_evidence, headers={
+     
+        policy_response_vc = requests.post(policy_endpoint, json=vc_evidence, headers={
              'Authorization': 'Bearer ' + access_token
         })
 
+
         try:
-            policy_response.raise_for_status()
+            policy_response_vc.raise_for_status()
         except HTTPError as e:
             print('HTTP  ERROR')
             print(e.request.body)
@@ -511,18 +592,18 @@ class I4TrustService(Plugin):
         not_after = not_before + (asset.meta_info['minutes'] * 60)
 
         # Create new policy
-        delegation_evidence = self._create_delegation_evidence(asset, order, not_before, not_after)
+        vc_evidence = self._create_vc(asset, order, not_before, not_after)
         
         # Get access token
         access_token = self._get_access_token(asset)
 
-        # Create policies
-        policy_response = requests.post(policy_endpoint, json=delegation_evidence, headers={
+      
+        policy_response_vc = requests.post(policy_endpoint, json=vc_evidence, headers={
              'Authorization': 'Bearer ' + access_token
         })
 
         try:
-            policy_response.raise_for_status()
+            policy_response_vc.raise_for_status()
         except HTTPError as e:
             print('HTTP  ERROR')
             print(e.request.body)

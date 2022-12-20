@@ -1,5 +1,5 @@
 {
-    "name": "NGSI-LD Data Service",
+    "name": "NGSI-LD Data Service - Rolebased VCs",
     "author": "fdelavega",
     "version": "3.0.0",
     "module": "i4trust_service.I4TrustService",
@@ -10,6 +10,7 @@
     "form_order": [
 	"ar_id", "ar_token_endpoint", "ar_policy_endpoint",
 	"minutes",
+    "vc_type", "role_name",
 	"resource_type",
 	"get_allowed", "get_ids", "get_attributes",
 	"patch_allowed", "patch_ids", "patch_attributes",
@@ -36,7 +37,7 @@
             "placeholder": "https://pdc-as.i4trust.fiware.io/token",
             "mandatory": true
         },
-	"ar_policy_endpoint": {
+	    "ar_policy_endpoint": {
             "type": "text",
             "label": "AR /createpolicy Endpoint",
             "placeholder": "https://pdc-as.i4trust.fiware.io/createpolicy",
@@ -46,6 +47,18 @@
             "type": "text",
             "label": "AR ID",
             "placeholder": "EU.EORI.NL000000000",
+            "mandatory": true
+        },
+        "vc_type": {
+            "type": "text",
+            "label": "Verifiable Credential Type",
+            "placeholder": "PacketDeliveryService",
+            "mandatory": true
+        },
+        "role_name": {
+            "type": "text",
+            "label": "Name of the role to be created",
+            "placeholder": "PDC_CUSTOMER",
             "mandatory": true
         },
         "resource_type": {
@@ -59,7 +72,7 @@
             "label": "PATCH Entity",
             "default": false
         },
-	"patch_ids": {
+	    "patch_ids": {
             "type": "text",
             "label": "PATCH Entity Identifiers",
             "placeholder": "id1,id2"
@@ -74,7 +87,7 @@
             "label": "GET Entity",
             "default": false
         },
-	"get_ids": {
+	    "get_ids": {
             "type": "text",
             "label": "GET Entity Identifiers",
             "placeholder": "*"
@@ -196,11 +209,11 @@
             "label": "Notification Identifiers (corresponding Subscription IDs)",
             "placeholder": "id1,id2"
         },
-        "notification_attributes": {
-            "type": "text",
-            "label": "Notification Attributes (entity attributes in Notification)",
-            "placeholder": "pta,pda"
-        },
+    "notification_attributes": {
+        "type": "text",
+        "label": "Notification Attributes (entity attributes in Notification)",
+        "placeholder": "pta,pda"
+    },
 	"sidecar_endpoint_config_allowed": {
             "type": "checkbox",
             "label": "Sidecar-Proxy endpoint configuration service",
