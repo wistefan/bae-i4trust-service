@@ -93,102 +93,8 @@ class I4TrustService(Plugin):
             raise PluginError('Verifiable Credential type must be specified.')
 
         # Check role name 
-        if 'role_name' not in asset.meta_info:
-            raise PluginError('Name of the role must be specified.')
-
-
-        # Entity CRUD operations
-        if 'get_allowed' not in asset.meta_info:
-            asset.meta_info['get_allowed'] = False
-        else:
-            if not asset.meta_info.get('get_attributes') or len(asset.meta_info['get_attributes']) < 1:
-                asset.meta_info['get_attributes'] = "*"
-            if not asset.meta_info.get('get_ids') or len(asset.meta_info['get_ids']) < 1:
-                asset.meta_info['get_ids'] = "*"
-
-        if 'patch_allowed' not in asset.meta_info:
-            asset.meta_info['patch_allowed'] = False
-        else:
-            if not asset.meta_info.get('patch_attributes') or len(asset.meta_info['patch_attributes']) < 1:
-                asset.meta_info['patch_attributes'] = "*"
-            if not asset.meta_info.get('patch_ids') or len(asset.meta_info['patch_ids']) < 1:
-                asset.meta_info['patch_ids'] = "*"
-
-        if 'post_allowed' not in asset.meta_info:
-            asset.meta_info['post_allowed'] = False
-        else:
-            if not asset.meta_info.get('post_attributes') or len(asset.meta_info['post_attributes']) < 1:
-                asset.meta_info['post_attributes'] = "*"
-            if not asset.meta_info.get('post_ids') or len(asset.meta_info['post_ids']) < 1:
-                asset.meta_info['post_ids'] = "*"
-
-        if 'delete_allowed' not in asset.meta_info:
-            asset.meta_info['delete_allowed'] = False
-        else:
-            if not asset.meta_info.get('delete_attributes') or len(asset.meta_info['delete_attributes']) < 1:
-                asset.meta_info['delete_attributes'] = "*"
-            if not asset.meta_info.get('delete_ids') or len(asset.meta_info['delete_ids']) < 1:
-                asset.meta_info['delete_ids'] = "*"
-
-        if     (asset.meta_info['get_allowed'] or asset.meta_info['patch_allowed'] or
-                asset.meta_info['post_allowed'] or asset.meta_info['delete_allowed']):
-            if not asset.meta_info.get('resource_type') or len(asset.meta_info['resource_type']) < 1:
-                raise PluginError('Entity type must be specified for Entity CRUD operations')
-
-        # Subscription CRUD operations
-        if 'get_subscription_allowed' not in asset.meta_info:
-            asset.meta_info['get_subscription_allowed'] = False
-        else:
-            if not asset.meta_info.get('get_subscription_attributes') or len(asset.meta_info['get_subscription_attributes']) < 1:
-                asset.meta_info['get_subscription_attributes'] = "*"
-            if not asset.meta_info.get('get_subscription_ids') or len(asset.meta_info['get_subscription_ids']) < 1:
-                asset.meta_info['get_subscription_ids'] = "*"
-
-        if 'patch_subscription_allowed' not in asset.meta_info:
-            asset.meta_info['patch_subscription_allowed'] = False
-        else:
-            if not asset.meta_info.get('patch_subscription_attributes') or len(asset.meta_info['patch_subscription_attributes']) < 1:
-                asset.meta_info['patch_subscription_attributes'] = "*"
-            if not asset.meta_info.get('patch_subscription_ids') or len(asset.meta_info['patch_subscription_ids']) < 1:
-                asset.meta_info['patch_subscription_ids'] = "*"
-
-        if 'post_subscription_allowed' not in asset.meta_info:
-            asset.meta_info['post_subscription_allowed'] = False
-        else:
-            if not asset.meta_info.get('post_subscription_attributes') or len(asset.meta_info['post_subscription_attributes']) < 1:
-                asset.meta_info['post_subscription_attributes'] = "*"
-            if not asset.meta_info.get('post_subscription_ids') or len(asset.meta_info['post_subscription_ids']) < 1:
-                asset.meta_info['post_subscription_ids'] = "*"
-
-        if 'delete_subscription_allowed' not in asset.meta_info:
-            asset.meta_info['delete_subscription_allowed'] = False
-        else:
-            if not asset.meta_info.get('delete_subscription_attributes') or len(asset.meta_info['delete_subscription_attributes']) < 1:
-                asset.meta_info['delete_subscription_attributes'] = "*"
-            if not asset.meta_info.get('delete_subscription_ids') or len(asset.meta_info['delete_subscription_ids']) < 1:
-                asset.meta_info['delete_subscription_ids'] = "*"
-
-        if     (asset.meta_info['get_subscription_allowed'] or asset.meta_info['patch_subscription_allowed'] or
-                asset.meta_info['post_subscription_allowed'] or asset.meta_info['delete_subscription_allowed']):
-            if not asset.meta_info.get('subscription_resource_type') or len(asset.meta_info['subscription_resource_type']) < 1:
-                raise PluginError('Subscription type must be specified for Subscription CRUD operations')
-
-        # Notifications
-        if 'notification_allowed' not in asset.meta_info:
-            asset.meta_info['notification_allowed'] = False
-        else:
-            if not asset.meta_info.get('notification_attributes') or len(asset.meta_info['notification_attributes']) < 1:
-                asset.meta_info['notification_attributes'] = "*"
-            if not asset.meta_info.get('notification_ids') or len(asset.meta_info['notification_ids']) < 1:
-                asset.meta_info['notification_ids'] = "*"
-
-        if asset.meta_info['notification_allowed']:
-            if not asset.meta_info.get('notification_resource_type') or len(asset.meta_info['notification_resource_type']) < 1:
-                raise PluginError('Notification type must be specified when enabling notifications')
-
-        # Sidecar-Proxy endpoint config service
-        if 'sidecar_endpoint_config_allowed' not in asset.meta_info:
-            asset.meta_info['sidecar_endpoint_config_allowed'] = False
+        if 'role_names' not in asset.meta_info:
+            raise PluginError('Name of the roles must be specified.')
 
         # Set expiration duration
         try:
@@ -196,35 +102,7 @@ class I4TrustService(Plugin):
         except:
             asset.meta_info['minutes'] = 10080  # One week
 
-
-        policy_endpoint = asset.meta_info['ar_policy_endpoint']
-
-        not_before = int(str(time.time()).split('.')[0])
-        not_after = not_before + (3 * 31536000)
-
-        # create the role
-        role_evidence = self._create_role(asset, not_before, not_after)
-
-         
-        # Get access token
-        access_token = self._get_access_token(asset)
-
-        # Create policies
-        policy_response_role = requests.post(policy_endpoint, json=role_evidence, headers={
-             'Authorization': 'Bearer ' + access_token
-        })
-
-        try:
-            policy_response_role.raise_for_status()
-            # Save asset data
-            asset.save()
-        except HTTPError as e:
-            print('HTTP  ERROR')
-            print(e.request.body)
-            print(e)
-            print(e.response.text)
-
-            raise PluginError('Error creating policy')
+        asset.save()
 
 
     def _append_string_charact(self, charact, name, description, value):
@@ -261,138 +139,12 @@ class I4TrustService(Plugin):
                 asset.meta_info['vc_type'])
 
             # Add role name
-            if asset.meta_info['role_name']: 
+            if asset.meta_info['role_names']: 
                 self._append_string_charact(charact, 
                 "Role name",
-                "Name of the role to be created.",
-                asset.meta_info['role_name'])
-
-            # Add entity type
-            if     (asset.meta_info['get_allowed'] or asset.meta_info['patch_allowed'] or
-                    asset.meta_info['post_allowed'] or asset.meta_info['delete_allowed']):
-                self._append_string_charact(charact,
-                                            "Entity type",
-                                            "Entity type that would be accessed",
-                                            asset.meta_info['resource_type'])
-            
-            # Add Supported patch (entity, attributes)
-            if asset.meta_info['patch_allowed']:
-                self._append_string_charact(charact,
-                                            "PATCH Entity Attributes Permission",
-                                            "Entity attributes that can be patched",
-                                            asset.meta_info['patch_attributes'])
-                self._append_string_charact(charact,
-                                            "PATCH Entity IDs",
-                                            "Entity IDs that can be patched",
-                                            asset.meta_info['patch_ids'])
-
-            # Add supported get
-            if asset.meta_info['get_allowed']:
-                self._append_string_charact(charact,
-                                            "GET Entity Attributes Permission",
-                                            "Entity attributes that can be read",
-                                            asset.meta_info['get_attributes'])
-                self._append_string_charact(charact,
-                                            "GET Entity IDs",
-                                            "Entity IDs that can be read",
-                                            asset.meta_info['get_ids'])
-
-            # Add supported post
-            if asset.meta_info['post_allowed']:
-                self._append_string_charact(charact,
-                                            "POST Entity Attributes Permission",
-                                            "Entity attributes that can be posted",
-                                            asset.meta_info['post_attributes'])
-                self._append_string_charact(charact,
-                                            "POST Entity IDs",
-                                            "Entity IDs that can be posted",
-                                            asset.meta_info['post_ids'])
-
-            # Add supported delete
-            if asset.meta_info['delete_allowed']:
-                self._append_string_charact(charact,
-                                            "DELETE Entity Attributes Permission",
-                                            "Entity attributes that can be deleted",
-                                            asset.meta_info['delete_attributes'])
-                self._append_string_charact(charact,
-                                            "DELETE Entity IDs",
-                                            "Entity IDs that can be deleted",
-                                            asset.meta_info['delete_ids'])
-
-            # Add entity subscription type
-            if     (asset.meta_info['get_subscription_allowed'] or asset.meta_info['patch_subscription_allowed'] or
-                    asset.meta_info['post_subscription_allowed'] or asset.meta_info['delete_subscription_allowed']):
-                self._append_string_charact(charact,
-                                            "Subscription type",
-                                            "Watched entity type of subscription",
-                                            asset.meta_info['subscription_resource_type'])
-            
-            # Add Supported patch subscription
-            if asset.meta_info['patch_subscription_allowed']:
-                self._append_string_charact(charact,
-                                            "PATCH Subscription Attributes Permission",
-                                            "Subscription attributes that can be patched (Notification attributes)",
-                                            asset.meta_info['patch_subscription_attributes'])
-                self._append_string_charact(charact,
-                                            "PATCH Subscription IDs",
-                                            "Subscription IDs that can be patched",
-                                            asset.meta_info['patch_subscription_ids'])
-
-            # Add supported get subscription
-            if asset.meta_info['get_subscription_allowed']:
-                self._append_string_charact(charact,
-                                            "GET Subscription Attributes Permission",
-                                            "Subscription attributes that can be read (Notification attributes)",
-                                            asset.meta_info['get_subscription_attributes'])
-                self._append_string_charact(charact,
-                                            "GET Subscription IDs",
-                                            "Subscription IDs that can be read",
-                                            asset.meta_info['get_subscription_ids'])
-
-            # Add supported post subscription
-            if asset.meta_info['post_subscription_allowed']:
-                self._append_string_charact(charact,
-                                            "POST Subscription Attributes Permission",
-                                            "Subscription attributes that can be posted (Notification attributes)",
-                                            asset.meta_info['post_subscription_attributes'])
-                self._append_string_charact(charact,
-                                            "POST Subscription IDs",
-                                            "Subscription IDs that can be posted",
-                                            asset.meta_info['post_subscription_ids'])
-
-            # Add supported delete subscription
-            if asset.meta_info['delete_subscription_allowed']:
-                self._append_string_charact(charact,
-                                            "DELETE Subscription Attributes Permission",
-                                            "Subscription attributes that can be deleted (Notification attributes)",
-                                            asset.meta_info['delete_subscription_attributes'])
-                self._append_string_charact(charact,
-                                            "DELETE Subscription IDs",
-                                            "Subscription IDs that can be deleted",
-                                            asset.meta_info['delete_subscription_ids'])
-
-            # Add notification type
-            if asset.meta_info['notification_allowed']:
-                self._append_string_charact(charact,
-                                            "Notification type",
-                                            "Entity type in notification",
-                                            asset.meta_info['notification_resource_type'])
-                self._append_string_charact(charact,
-                                            "Notification Attributes Permission",
-                                            "Entity attributes in notification",
-                                            asset.meta_info['notification_attributes'])
-                self._append_string_charact(charact,
-                                            "Notification Identifiers",
-                                            "IDs of corresponding subscriptions",
-                                            asset.meta_info['notification_ids'])
-
-            # Add Sidecar-Proxy endpoint config service
-            if asset.meta_info['sidecar_endpoint_config_allowed']:
-                self._append_string_charact(charact,
-                                            "Sidecar-Proxy endpoint configuration service",
-                                            "Access to sidecar-proxy endpoint configuration service allowed",
-                                            "True") # TODO: Can one use boolean instead?
-                
+                "(Comma seperated) List of assingable roles.",
+                asset.meta_info['role_names'])
+             
             resp = requests.patch(prod_url, json={
                 'productSpecCharacteristic': charact
             }, verify=False)
@@ -467,7 +219,7 @@ class I4TrustService(Plugin):
 
         # Set policies
         policies = []
-        policies.append(self._create_policy("ISSUE", asset.meta_info['vc_type'], "*", asset.meta_info['role_name']))
+        policies.append(self._create_policy("ISSUE", asset.meta_info['vc_type'], "*", asset.meta_info['role_names']))
          # Create delegation evidence to be updated
         delegation_evidence = {
             "delegationEvidence": {
@@ -496,32 +248,7 @@ class I4TrustService(Plugin):
         # Set policies
         policies = []
 
-        # Entity CRUD
-        if asset.meta_info['patch_allowed']:
-            policies.append(self._create_policy("PATCH", asset.meta_info['resource_type'], asset.meta_info['patch_ids'], asset.meta_info['patch_attributes']))
-
-        if asset.meta_info['get_allowed']:
-            policies.append(self._create_policy("GET", asset.meta_info['resource_type'], asset.meta_info['get_ids'], asset.meta_info['get_attributes']))
-
-        if asset.meta_info['post_allowed']:
-            policies.append(self._create_policy("POST", asset.meta_info['resource_type'], asset.meta_info['post_ids'], asset.meta_info['post_attributes']))
-
-        if asset.meta_info['delete_allowed']:
-            policies.append(self._create_policy("DELETE", asset.meta_info['resource_type'], asset.meta_info['delete_ids'], asset.meta_info['delete_attributes']))
-
-        # Subscription CRUD
-        if asset.meta_info['patch_subscription_allowed']:
-            policies.append(self._create_policy("PATCH:Subscription", asset.meta_info['subscription_resource_type'], asset.meta_info['patch_subscription_ids'], asset.meta_info['patch_subscription_attributes']))
-
-        if asset.meta_info['get_subscription_allowed']:
-            policies.append(self._create_policy("GET:Subscription", asset.meta_info['subscription_resource_type'], asset.meta_info['get_subscription_ids'], asset.meta_info['get_subscription_attributes']))
-
-        if asset.meta_info['post_subscription_allowed']:
-            policies.append(self._create_policy("POST:Subscription", asset.meta_info['subscription_resource_type'], asset.meta_info['post_subscription_ids'], asset.meta_info['post_subscription_attributes']))
-
-        if asset.meta_info['delete_subscription_allowed']:
-            policies.append(self._create_policy("DELETE:Subscription", asset.meta_info['subscription_resource_type'], asset.meta_info['delete_subscription_ids'], asset.meta_info['delete_subscription_attributes']))
-
+      
         # Notifications
         if asset.meta_info['notification_allowed']:
             policies.append(self._create_policy("POST:Notification", asset.meta_info['notification_resource_type'], asset.meta_info['notification_ids'], asset.meta_info['notification_attributes']))
