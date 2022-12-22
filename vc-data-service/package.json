@@ -1,0 +1,53 @@
+{
+    "name": "NGSI-LD Data Service for VerifiableCredentials",
+    "author": "wistefan",
+    "version": "1.0.0",
+    "module": "i4trust_service.I4TrustService",
+    "media_types": ["FIWARE NGSI-LD"],
+    "formats": ["URL"],
+    "overrides": [],
+    "pull_accounting": true,
+    "form_order": [
+	"ar_id", "ar_token_endpoint", "ar_policy_endpoint",
+	"minutes",
+    "vc_type", "role_names"
+    ],
+    "form": {
+        "minutes": {
+            "type": "text",
+            "label": "Duration in Minutes",
+            "placeholder": "100000",
+            "mandatory": false
+        },
+        "ar_token_endpoint": {
+            "type": "text",
+            "label": "AR /token Endpoint",
+            "placeholder": "https://pdc-as.i4trust.fiware.io/token",
+            "mandatory": true
+        },
+	    "ar_policy_endpoint": {
+            "type": "text",
+            "label": "AR /createpolicy Endpoint",
+            "placeholder": "https://pdc-as.i4trust.fiware.io/createpolicy",
+            "mandatory": true
+        },
+        "ar_id": {
+            "type": "text",
+            "label": "AR ID",
+            "placeholder": "EU.EORI.NL000000000",
+            "mandatory": true
+        },
+        "vc_type": {
+            "type": "text",
+            "label": "Verifiable Credential Type",
+            "placeholder": "PacketDeliveryService",
+            "mandatory": true
+        },
+        "role_names": {
+            "type": "text",
+            "label": "(Comma-seperated) List of roles alloewd to be issued.",
+            "placeholder": "PDC_CUSTOMER",
+            "mandatory": true
+        }
+    }
+}
