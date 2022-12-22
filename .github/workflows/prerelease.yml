@@ -24,26 +24,26 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - id: bump
-        uses: zwaldowski/match-label-action@v1
-        with:
-          allowed: major,minor,patch
+    #  - id: bump
+    #    uses: zwaldowski/match-label-action@v1
+    #    with:
+   #       allowed: major,minor,patch
 
-      - uses: zwaldowski/semver-release-action@v2
-        with:
-          dry_run: true
-          bump: ${{ steps.bump.outputs.match }}
-          github_token: ${{ secrets.GITHUB_TOKEN }}
+    #  - uses: zwaldowski/semver-release-action@v2
+    #    with:
+     #     dry_run: true
+     #     bump: ${{ steps.bump.outputs.match }}
+     #     github_token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Get PR Number
-        id: pr_number
-        run: echo "::set-output name=nr::$(echo $GITHUB_REF | awk 'BEGIN { FS = "/" } ; { print $3 }')"
+    #  - name: Get PR Number
+    #    id: pr_number
+     #   run: echo "::set-output name=nr::$(echo $GITHUB_REF | awk 'BEGIN { FS = "/" } ; { print $3 }')"
 
       - name: Set version output
         id: out
         run: |
-          echo "::set-output name=version::$(echo ${VERSION}-PRE-${{ steps.pr_number.outputs.nr }})"
-          echo "::set-output name=plain-version::$(echo ${VERSION})"
+          echo "::set-output name=version::$(echo TEST-PRE-TEST)"
+          echo "::set-output name=plain-version::$(echo TEST-PRE)"
 
   release:
     name: Zip and Release
