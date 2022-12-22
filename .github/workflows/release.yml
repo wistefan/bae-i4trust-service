@@ -48,12 +48,12 @@ jobs:
       - uses: actions/checkout@v2
 
       - name: Set version
-        run:
+        run: |
           jq '.version = $newVersion' --arg newVersion ${{ needs.generate-version.outputs.version }} vc-data-service/package.json > vc-data-service/tmp.package.json && mv vc-data-service/tmp.package.json vc-data-service/package.json    
           jq '.version = $newVersion' --arg newVersion ${{ needs.generate-version.outputs.version }} i4trust-data-service/package.json > i4trust-data-service/tmp.package.json && mv i4trust-data-service/tmp.package.json i4trust-data-service/package.json    
 
       - name: Echo update
-        run:
+        run: |
           cat vc-data-service/package.json
           cat i4trust-data-service/package.json
 
