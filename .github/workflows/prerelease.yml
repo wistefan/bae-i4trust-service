@@ -7,7 +7,9 @@ on:
       - synchronize
       - reopened
       - labeled
-      - unlabeled
+      - unlabeled  
+    branches:
+      - main
 
 jobs:
 
