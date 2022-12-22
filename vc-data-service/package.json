@@ -1,7 +1,7 @@
 {
-    "name": "NGSI-LD Data Service for VerifiableCredentials 2",
-    "author": "fdelavega",
-    "version": "3.0.0",
+    "name": "NGSI-LD Data Service for VerifiableCredentials",
+    "author": "wistefan",
+    "version": "1.0.0",
     "module": "i4trust_service.I4TrustService",
     "media_types": ["FIWARE NGSI-LD"],
     "formats": ["URL"],
