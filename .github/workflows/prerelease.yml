@@ -9,9 +9,6 @@ on:
       - labeled
       - unlabeled
 
-env:
-  PLUGIN_NAME: bae-i4trust-service
-
 jobs:
 
   generate-version:
@@ -46,7 +43,6 @@ jobs:
           echo "::set-output name=version::$(echo ${VERSION}-PRE-${{ steps.pr_number.outputs.nr }})"
           echo "::set-output name=plain-version::$(echo ${VERSION})"
 
-
   release:
     name: Zip and Release
     needs: ["generate-version"]
@@ -56,9 +52,23 @@ jobs:
 
       - uses: actions/checkout@v2
 
-      - name: Zip plugin
+      - name: Set version
+        run:
+          jq '.version = $newVersion' --arg newVersion ${{ needs.generate-version.outputs.version }} vc-data-service/package.json > vc-data-service/tmp.package.json && mv vc-data-service/tmp.package.json vc-data-service/package.json    
+          jq '.version = $newVersion' --arg newVersion ${{ needs.generate-version.outputs.version }} i4trust-data-service/package.json > i4trust-data-service/tmp.package.json && mv i4trust-data-service/tmp.package.json i4trust-data-service/package.json    
+
+      - name: Echo update
+        run:
+          cat vc-data-service/package.json
+          cat i4trust-data-service/package.json
+
+      - name: Zip plugin i4trust
         run: |
-          zip ${{ env.PLUGIN_NAME }}_${{ needs.generate-version.outputs.version }}.zip package.json i4trust_service.py
+          zip bae-i4trust-service_${{ needs.generate-version.outputs.version }}.zip i4trust-data-service/package.json i4trust-data-service/i4trust_service.py
+
+      - name: Zip plugin vc
+        run: |
+          zip bae-vc-service_${{ needs.generate-version.outputs.version }}.zip vc-data-service/package.json vc-data-service/i4trust_service.py
 
       - uses: "marvinpinto/action-automatic-releases@latest"
         with:
@@ -67,7 +77,8 @@ jobs:
           prerelease: true
           title: ${{ needs.generate-version.outputs.version }}
           files: |
-            ${{ env.PLUGIN_NAME }}_${{ needs.generate-version.outputs.version }}.zip
+             bae-i4trust-service_${{ needs.generate-version.outputs.version }}.zip
+             bae-vc-service_${{ needs.generate-version.outputs.version }}.zip
 
   
       
